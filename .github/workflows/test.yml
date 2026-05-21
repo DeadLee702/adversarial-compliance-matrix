@@ -1,0 +1,33 @@
+name: Adversarial Compliance Matrix CI
+
+on: [push, pull_request]
+
+jobs:
+  test-matrix:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust Toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Cargo Dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Build Release Binary
+        run: cargo build --release --bin evk
+
+      - name: Build Fixture Generator
+        run: cargo build --release --bin gen_fixtures
+
+      - name: Execute 12-Incident Compliance Test Suite
+        run: cargo test --test simulation_matrix
