@@ -1,0 +1,18 @@
+[package]
+name = "adversarial-compliance-matrix"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+
+[[bin]]
+name = "evk"
+path = "src/main.rs"
+
+[[bin]]
+name = "gen_fixtures"
+path = "src/bin/gen_fixtures.rs"
+
+[[test]]
+name = "simulation_matrix"
+path = "tests/simulation_matrix.rs"
