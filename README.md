@@ -45,4 +45,4 @@ cargo build --release
 cargo run --bin gen_fixtures
 
 # Verify an incident file
-cargo run --bin evk -- verify fixtures/incident_handoff_conflict.evkp
+cargo run --bin evk -- verify fixtures/incident_handoff_conflict.evkp 
