@@ -50,3 +50,9 @@ cargo run --bin gen_fixtures
 
 # Verify an incident file
 cargo run --bin evk -- verify fixtures/incident_handoff_conflict.evkp 
+
+## Related Projects
+This is part of a three-layer deterministic verification stack:
+- **[evk](https://github.com/DeadLee702/evk)** (Bundle validation & determinism)
+- **[gemini-box](https://github.com/DeadLee702/gemini-box)** (Cryptographic signing & verification)
+- **[adversarial-compliance-matrix](https://github.com/DeadLee702/adversarial-compliance-matrix)** ← You are here (12 incident detection tests)
