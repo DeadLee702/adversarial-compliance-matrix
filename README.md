@@ -1,3 +1,7 @@
+**Status: 12/12 Tests Passing** ✅
+
+This is the verification layer for the [evk](https://github.com/DeadLee702/evk) deterministic bundle validator.
+
 # Adversarial Compliance Matrix
 
 **A Rust CLI tool for simulating and detecting 12 real-world compliance and adversarial incidents.**
