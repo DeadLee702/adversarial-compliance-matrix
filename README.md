@@ -1,5 +1,11 @@
 **Status: 12/12 Tests Passing** ✅
 
+## 🏆 FIND EVIL! Hackathon Submission
+
+**[View Full Submission on Devpost →](https://devpost.com/software/gemini-box-m0kxy1)**
+
+Part of the 3-layer incident detection stack for Protocol SIFT. Multi-Agent Framework entry with 100% accuracy on all test cases.
+
 This is the verification layer for the [evk](https://github.com/DeadLee702/evk) deterministic bundle validator.
 
 # Adversarial Compliance Matrix
@@ -10,7 +16,7 @@ This is the verification layer for the [evk](https://github.com/DeadLee702/evk) 
 
 **Adversarial Compliance Matrix** lets you generate and verify "compliance artifacts" (`.evkp` files) that represent different types of security, operational, or adversarial incidents.
 
-It’s a lightweight **training, testing, and red-teaming tool** — perfect for understanding how systems fail under pressure.
+It's a lightweight **training, testing, and red-teaming tool** — perfect for understanding how systems fail under pressure.
 
 ## ✨ Features
 
@@ -49,10 +55,16 @@ cargo build --release
 cargo run --bin gen_fixtures
 
 # Verify an incident file
-cargo run --bin evk -- verify fixtures/incident_handoff_conflict.evkp 
+cargo run --bin evk -- verify test/incident_7f3a.evkp
+```
 
 ## Related Projects
+
 This is part of a three-layer deterministic verification stack:
 - **[evk](https://github.com/DeadLee702/evk)** (Bundle validation & determinism)
 - **[gemini-box](https://github.com/DeadLee702/gemini-box)** (Cryptographic signing & verification)
 - **[adversarial-compliance-matrix](https://github.com/DeadLee702/adversarial-compliance-matrix)** ← You are here (12 incident detection tests)
+
+## License
+
+MIT License - See LICENSE file for details
