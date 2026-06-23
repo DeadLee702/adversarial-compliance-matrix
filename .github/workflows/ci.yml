@@ -10,5 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
       - name: Run tests
-        run: cargo test --test compliance --nocapture
+        run: >
+          cargo test --test compliance --nocapture
