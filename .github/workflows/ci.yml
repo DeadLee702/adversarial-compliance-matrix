@@ -11,4 +11,4 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Run tests
-        run: cargo test --test compliance -- --nocapture
+        run: cargo test --test simulation_matrix -- --nocapture
