@@ -1,19 +1,70 @@
-# adversarial-compliance-matrix - EVK Stack Test Harness
+**Status: 12/12 Tests Passing** ✅
 
-Adversarial testing framework for EVK Stack evidence bundles. Validates cryptographic signing, verification, and fail-closed behavior.
+## 🏆 FIND EVIL! Hackathon Submission
 
-## Core Function
-1. **Load**: Parse `.evkp` bundles from evk
-2. **Verify**: Call gemini-box to verify ed25519 signatures  
-3. **Test**: Run adversarial cases - tamper, missing sig, invalid keys
-4. **Report**: Output PASS/FAIL matrix for compliance validation
+**[View Full Submission on Devpost →](https://devpost.com/software/gemini-box-m0kxy1)**
 
-## Usage
+Part of the 3-layer incident detection stack for Protocol SIFT. Multi-Agent Framework entry with 100% accuracy on all test cases.
+
+This is the verification layer for the [evk](https://github.com/DeadLee702/evk) deterministic bundle validator.
+
+# Adversarial Compliance Matrix
+
+**A Rust CLI tool for simulating and detecting 12 real-world compliance and adversarial incidents.**
+
+## 🎯 What is it?
+
+**Adversarial Compliance Matrix** lets you generate and verify "compliance artifacts" (`.evkp` files) that represent different types of security, operational, or adversarial incidents.
+
+It's a lightweight **training, testing, and red-teaming tool** — perfect for understanding how systems fail under pressure.
+
+## ✨ Features
+
+- ⚡ Fast Rust-based verification engine
+- 🎯 12 realistic adversarial/compliance incident types
+- 🧪 Fixture generator for easy testing
+- 🖥️ Clean command-line interface (`evk verify`)
+
+## 📋 The 12-Incident Matrix
+
+| Incident                  | Code      | Description                              |
+|---------------------------|-----------|------------------------------------------|
+| Handoff Conflict          | `0x0F2E`  | Step executed by wrong actor            |
+| Race Condition            | `0x0E1A`  | Concurrent modification                 |
+| Orphaned Step             | `0x0D44`  | Step with no parent process             |
+| Transaction Replay        | `0x1A4F`  | Re-execution of prior transaction       |
+| Schema Mutation           | `0x1B88`  | Unexpected data structure change        |
+| Log Truncation            | `0x1C2B`  | Critical log entries removed            |
+| Packet Modification       | `0x2A90`  | In-transit data tampering               |
+| Timestamp Drift           | `0x2B11`  | Significant clock skew                  |
+| API Spoofing              | `0x2C7F`  | Impersonated service endpoint           |
+| Prompt Injection          | `0x3A01`  | Malicious input to LLM/system           |
+| Entropy Leakage           | `0x3B99`  | Cryptographic material exposed          |
+| Register Forgery          | `0x3C4D`  | Tampered hardware/software register     |
+
+## 🚀 Quick Start
+
 ```bash
-cargo test --test compliance --nocapture
+git clone https://github.com/DeadLee702/adversarial-compliance-matrix.git
+cd adversarial-compliance-matrix
+
+# Build the project
+cargo build --release
+
+# Generate test fixtures
+cargo run --bin gen_fixtures
+
+# Verify an incident file
+cargo run --bin evk -- verify test/incident_7f3a.evkp
 ```
 
-## EVK Stack Integration
-`evk` → bundles → `gemini-box` → signs → `adversarial-compliance-matrix` → tests
+## Related Projects
 
-MIT Licensed. Part of EVK Stack.
+This is part of a three-layer deterministic verification stack:
+- **[evk](https://github.com/DeadLee702/evk)** (Bundle validation & determinism)
+- **[gemini-box](https://github.com/DeadLee702/gemini-box)** (Cryptographic signing & verification)
+- **[adversarial-compliance-matrix](https://github.com/DeadLee702/adversarial-compliance-matrix)** ← You are here (12 incident detection tests)
+
+## License
+
+MIT License - See LICENSE file for details
