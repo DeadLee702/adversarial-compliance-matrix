@@ -3,7 +3,7 @@ name: Adversarial Compliance Matrix CI
 on: [push, pull_request]
 
 jobs:
-  test-matrix:
+  build-and-test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -11,6 +11,8 @@ jobs:
 
       - name: Install Rust Toolchain
         uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
 
       - name: Cache Cargo Dependencies
         uses: actions/cache@v4
@@ -24,10 +26,16 @@ jobs:
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Build Release Binary
-        run: cargo build --release --bin evk
+        run: cargo build --release --locked --bin evk
 
       - name: Build Fixture Generator
-        run: cargo build --release --bin gen_fixtures
+        run: cargo build --release --locked --bin gen_fixtures
 
-      - name: Execute 12-Incident Compliance Test Suite
-        run: cargo test --test simulation_matrix
+      - name: Execute Compliance Test Suite
+        run: cargo test --release --locked --verbose
+
+      - name: Check formatting
+        run: cargo fmt --all --check
+
+      - name: Run clippy
+        run: cargo clippy --all-targets --all-features -- -D warnings

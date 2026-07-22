@@ -57,7 +57,7 @@ mod tests {
             STATUS_ENTROPY_LEAKAGE,
             STATUS_REGISTER_FORGERY,
         ];
-        
+
         let mut sorted = codes.clone();
         sorted.sort();
         sorted.dedup();

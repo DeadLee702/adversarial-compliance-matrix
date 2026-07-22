@@ -23,12 +23,18 @@ impl TempDir {
         fs::create_dir_all(&path).unwrap();
         TempDir { path }
     }
-    fn join(&self, name: &str) -> PathBuf { self.path.join(name) }
-    fn join_s(&self, name: String) -> PathBuf { self.path.join(name) }
+    fn join(&self, name: &str) -> PathBuf {
+        self.path.join(name)
+    }
+    fn join_s(&self, name: String) -> PathBuf {
+        self.path.join(name)
+    }
 }
 
 impl Drop for TempDir {
-    fn drop(&mut self) { let _ = fs::remove_dir_all(&self.path); }
+    fn drop(&mut self) {
+        let _ = fs::remove_dir_all(&self.path);
+    }
 }
 
 fn write_incident(path: &PathBuf, code: u16, payload: &[u8]) {
@@ -42,9 +48,7 @@ fn write_incident(path: &PathBuf, code: u16, payload: &[u8]) {
 
 fn run_evk_verify(cwd: &PathBuf, file_arg: &str, cert: bool) -> (bool, String, String) {
     let mut cmd = Command::new(cargo_bin("evk"));
-    cmd.current_dir(cwd)
-        .arg("verify")
-        .arg(file_arg);
+    cmd.current_dir(cwd).arg("verify").arg(file_arg);
     if cert {
         cmd.arg("--cert");
     }
@@ -75,18 +79,66 @@ struct MaliciousCase {
 
 fn all_malicious_cases() -> Vec<MaliciousCase> {
     vec![
-        MaliciousCase { code: 0x0F2E, hex: "7f3a", message: "Handoff conflict detected" },
-        MaliciousCase { code: 0x0E1A, hex: "12b9", message: "Race condition detected" },
-        MaliciousCase { code: 0x0D44, hex: "3c8d", message: "Orphaned step detected" },
-        MaliciousCase { code: 0x1A4F, hex: "5e41", message: "Transaction replay detected" },
-        MaliciousCase { code: 0x1B88, hex: "6a2f", message: "Schema mutation detected" },
-        MaliciousCase { code: 0x1C2B, hex: "8b7c", message: "Log truncation detected" },
-        MaliciousCase { code: 0x2A90, hex: "9d1e", message: "Packet modification detected" },
-        MaliciousCase { code: 0x2B11, hex: "a4f2", message: "Timestamp drift detected" },
-        MaliciousCase { code: 0x2C7F, hex: "b5c3", message: "API spoofing detected" },
-        MaliciousCase { code: 0x3A01, hex: "c6d9", message: "Prompt injection detected" },
-        MaliciousCase { code: 0x3B99, hex: "d7e5", message: "Entropy leakage detected" },
-        MaliciousCase { code: 0x3C4D, hex: "e8a1", message: "Register forgery detected" },
+        MaliciousCase {
+            code: 0x0F2E,
+            hex: "7f3a",
+            message: "Handoff conflict detected",
+        },
+        MaliciousCase {
+            code: 0x0E1A,
+            hex: "12b9",
+            message: "Race condition detected",
+        },
+        MaliciousCase {
+            code: 0x0D44,
+            hex: "3c8d",
+            message: "Orphaned step detected",
+        },
+        MaliciousCase {
+            code: 0x1A4F,
+            hex: "5e41",
+            message: "Transaction replay detected",
+        },
+        MaliciousCase {
+            code: 0x1B88,
+            hex: "6a2f",
+            message: "Schema mutation detected",
+        },
+        MaliciousCase {
+            code: 0x1C2B,
+            hex: "8b7c",
+            message: "Log truncation detected",
+        },
+        MaliciousCase {
+            code: 0x2A90,
+            hex: "9d1e",
+            message: "Packet modification detected",
+        },
+        MaliciousCase {
+            code: 0x2B11,
+            hex: "a4f2",
+            message: "Timestamp drift detected",
+        },
+        MaliciousCase {
+            code: 0x2C7F,
+            hex: "b5c3",
+            message: "API spoofing detected",
+        },
+        MaliciousCase {
+            code: 0x3A01,
+            hex: "c6d9",
+            message: "Prompt injection detected",
+        },
+        MaliciousCase {
+            code: 0x3B99,
+            hex: "d7e5",
+            message: "Entropy leakage detected",
+        },
+        MaliciousCase {
+            code: 0x3C4D,
+            hex: "e8a1",
+            message: "Register forgery detected",
+        },
     ]
 }
 
@@ -99,12 +151,31 @@ fn test_all_malicious_incidents_via_gen_fixtures_and_evk() {
         let filename = format!("test/incident_{}.evkp", case.hex);
         let (ok, stdout, _stderr) = run_evk_verify(&tmp.path, &filename, true);
 
-        assert!(!ok, "evk verify should exit non-zero for 0x{:04X} ({})", case.code, case.hex);
-        assert!(stdout.contains("INVALID"), "expected INVALID for {}: got {}", filename, stdout);
-        assert!(stdout.contains(&format!("0x{:04X}", case.code)),
-            "expected hex 0x{:04X} for {}: got {}", case.code, filename, stdout);
-        assert!(stdout.contains(case.message),
-            "expected message '{}' for {}: got {}", case.message, filename, stdout);
+        assert!(
+            !ok,
+            "evk verify should exit non-zero for 0x{:04X} ({})",
+            case.code, case.hex
+        );
+        assert!(
+            stdout.contains("INVALID"),
+            "expected INVALID for {}: got {}",
+            filename,
+            stdout
+        );
+        assert!(
+            stdout.contains(&format!("0x{:04X}", case.code)),
+            "expected hex 0x{:04X} for {}: got {}",
+            case.code,
+            filename,
+            stdout
+        );
+        assert!(
+            stdout.contains(case.message),
+            "expected message '{}' for {}: got {}",
+            case.message,
+            filename,
+            stdout
+        );
     }
 }
 
@@ -115,9 +186,21 @@ fn test_clean_incident_via_gen_fixtures_and_evk() {
 
     let (ok, stdout, _stderr) = run_evk_verify(&tmp.path, "test/incident_clean.evkp", true);
     assert!(ok, "clean file should exit 0: {}", stdout);
-    assert!(stdout.contains("VALID"), "expected VALID for clean file: got {}", stdout);
-    assert!(stdout.contains("0x0000"), "expected 0x0000 for clean: got {}", stdout);
-    assert!(stdout.contains("Clean artifact"), "expected 'Clean artifact' message: got {}", stdout);
+    assert!(
+        stdout.contains("VALID"),
+        "expected VALID for clean file: got {}",
+        stdout
+    );
+    assert!(
+        stdout.contains("0x0000"),
+        "expected 0x0000 for clean: got {}",
+        stdout
+    );
+    assert!(
+        stdout.contains("Clean artifact"),
+        "expected 'Clean artifact' message: got {}",
+        stdout
+    );
 }
 
 // ─── Direct file tests (without gen_fixtures) ──────────────────────────
@@ -132,7 +215,12 @@ fn test_each_malicious_code_directly() {
 
         let (ok, stdout, _stderr) = run_evk_verify(&tmp.path, path.to_str().unwrap(), false);
         assert!(!ok, "should fail for 0x{:04X}", case.code);
-        assert!(stdout.contains("INVALID"), "should say INVALID for 0x{:04X}: {}", case.code, stdout);
+        assert!(
+            stdout.contains("INVALID"),
+            "should say INVALID for 0x{:04X}: {}",
+            case.code,
+            stdout
+        );
         assert!(stdout.contains(&format!("0x{:04X}", case.code)));
         assert!(stdout.contains(case.message));
     }
@@ -267,7 +355,11 @@ fn test_exit_code_one_for_malicious() {
         .arg(path.to_str().unwrap())
         .output()
         .unwrap();
-    assert_eq!(output.status.code(), Some(1), "malicious file should exit 1");
+    assert_eq!(
+        output.status.code(),
+        Some(1),
+        "malicious file should exit 1"
+    );
 }
 
 #[test]
@@ -342,7 +434,10 @@ fn test_gen_fixtures_creates_all_13_files() {
             evkp_count += 1;
         }
     }
-    assert_eq!(evkp_count, 13, "should be 13 .evkp files (12 malicious + 1 clean)");
+    assert_eq!(
+        evkp_count, 13,
+        "should be 13 .evkp files (12 malicious + 1 clean)"
+    );
 }
 
 #[test]
@@ -391,7 +486,13 @@ fn test_gen_fixtures_malicious_files_contain_vulnerability_text() {
         let data = fs::read(&path).unwrap();
         let payload = &data[2..]; // skip status code
         let text = std::str::from_utf8(payload).unwrap();
-        assert!(text.contains(vuln), "file {} should contain '{}', got: {}", hex, vuln, text);
+        assert!(
+            text.contains(vuln),
+            "file {} should contain '{}', got: {}",
+            hex,
+            vuln,
+            text
+        );
     }
 }
 
@@ -404,7 +505,11 @@ fn test_gen_fixtures_clean_file_contains_clean_text() {
     let data = fs::read(&clean_path).unwrap();
     let payload = &data[2..];
     let text = std::str::from_utf8(payload).unwrap();
-    assert!(text.contains("Clean artifact"), "clean file should contain 'Clean artifact': {}", text);
+    assert!(
+        text.contains("Clean artifact"),
+        "clean file should contain 'Clean artifact': {}",
+        text
+    );
 }
 
 // ─── --cert flag behavior ─────────────────────────────────────────────
@@ -422,21 +527,25 @@ fn test_cert_flag_does_not_change_exit_code() {
     let clean_no_cert = Command::new(cargo_bin("evk"))
         .current_dir(&tmp.path)
         .args(["verify", clean.to_str().unwrap()])
-        .output().unwrap();
+        .output()
+        .unwrap();
     let clean_cert = Command::new(cargo_bin("evk"))
         .current_dir(&tmp.path)
         .args(["verify", clean.to_str().unwrap(), "--cert"])
-        .output().unwrap();
+        .output()
+        .unwrap();
     assert_eq!(clean_no_cert.status.code(), clean_cert.status.code());
 
     let mal_no_cert = Command::new(cargo_bin("evk"))
         .current_dir(&tmp.path)
         .args(["verify", mal.to_str().unwrap()])
-        .output().unwrap();
+        .output()
+        .unwrap();
     let mal_cert = Command::new(cargo_bin("evk"))
         .current_dir(&tmp.path)
         .args(["verify", mal.to_str().unwrap(), "--cert"])
-        .output().unwrap();
+        .output()
+        .unwrap();
     assert_eq!(mal_no_cert.status.code(), mal_cert.status.code());
 }
 
@@ -488,7 +597,11 @@ fn test_all_status_codes_are_unique() {
 #[test]
 fn test_all_malicious_codes_are_nonzero() {
     for case in all_malicious_cases() {
-        assert_ne!(case.code, 0x0000, "malicious code 0x{:04X} should be non-zero", case.code);
+        assert_ne!(
+            case.code, 0x0000,
+            "malicious code 0x{:04X} should be non-zero",
+            case.code
+        );
     }
 }
 
@@ -518,5 +631,8 @@ fn test_batch_verify_all_incidents() {
     }
 
     assert_eq!(valid_count, 1, "exactly 1 clean file should be valid");
-    assert_eq!(invalid_count, 12, "exactly 12 malicious files should be invalid");
+    assert_eq!(
+        invalid_count, 12,
+        "exactly 12 malicious files should be invalid"
+    );
 }

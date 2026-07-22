@@ -3,7 +3,6 @@ use std::process::Command;
 struct TestCase {
     filename: &'static str,
     expected_hex: &'static str,
-    is_valid: bool,
 }
 
 #[test]
@@ -15,62 +14,50 @@ fn test_adversarial_compliance_matrix() {
         TestCase {
             filename: "test/incident_7f3a.evkp",
             expected_hex: "0x0F2E",
-            is_valid: false,
         },
         TestCase {
             filename: "test/incident_12b9.evkp",
             expected_hex: "0x0E1A",
-            is_valid: false,
         },
         TestCase {
             filename: "test/incident_3c8d.evkp",
             expected_hex: "0x0D44",
-            is_valid: false,
         },
         TestCase {
             filename: "test/incident_5e41.evkp",
             expected_hex: "0x1A4F",
-            is_valid: false,
         },
         TestCase {
             filename: "test/incident_6a2f.evkp",
             expected_hex: "0x1B88",
-            is_valid: false,
         },
         TestCase {
             filename: "test/incident_8b7c.evkp",
             expected_hex: "0x1C2B",
-            is_valid: false,
         },
         TestCase {
             filename: "test/incident_9d1e.evkp",
             expected_hex: "0x2A90",
-            is_valid: false,
         },
         TestCase {
             filename: "test/incident_a4f2.evkp",
             expected_hex: "0x2B11",
-            is_valid: false,
         },
         TestCase {
             filename: "test/incident_b5c3.evkp",
             expected_hex: "0x2C7F",
-            is_valid: false,
         },
         TestCase {
             filename: "test/incident_c6d9.evkp",
             expected_hex: "0x3A01",
-            is_valid: false,
         },
         TestCase {
             filename: "test/incident_d7e5.evkp",
             expected_hex: "0x3B99",
-            is_valid: false,
         },
         TestCase {
             filename: "test/incident_e8a1.evkp",
             expected_hex: "0x3C4D",
-            is_valid: false,
         },
     ];
 

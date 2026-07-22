@@ -110,8 +110,7 @@ fn generate_incident_file(filename: &str, status_code: u16, vulnerability: &str)
 
     // Write status code as big-endian u16
     let bytes = status_code.to_be_bytes();
-    file.write_all(&bytes)
-        .expect("Failed to write status code");
+    file.write_all(&bytes).expect("Failed to write status code");
 
     // Write vulnerability payload
     file.write_all(vulnerability.as_bytes())
