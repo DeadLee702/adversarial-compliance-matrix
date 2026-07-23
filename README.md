@@ -1,46 +1,80 @@
-# DEC FORCE 10 - Gauntletized
-**(Production Hardened - Research/Educational)**
+# Adversarial Compliance Matrix (ACM)
 
-![Dec Force 10](https://img.shields.io/badge/Dec_Force-10-green) ![Compliance](https://img.shields.io/badge/Gauntlet-6%2F6_Modules_PASSING-success) ![Tests](https://img.shields.io/badge/Tests-15%2F15_Passing-success) ![COP](https://img.shields.io/badge/COP_Judge-ACTIVE-critical)
+> Continuous runtime validation and compliance engine for the Z-12 Sovereign Security Platform.
 
-**Status:** 15/15 Tests Passing ✅ | **Compliance:** 10x10 Matrix PASSING ✅
+## Role in the Z-12 Platform
 
-## 🏆 FIND EVIL! Hackathon Submission → Dec Force 10 Evolution
+| Component | Role |
+|-----------|------|
+| **EVK** | Deterministic identity/integrity verification + Kill Vector enforcement |
+| **Gemini-Box** | ed25519 signing, non-repudiation, forensic analysis |
+| **ACM** (this repo) | Compliance engine, verdict generation, threat detection |
 
-[View Full Submission on Devpost →](#)
+## Architecture
 
-Part of the 3-layer incident detection stack for Protocol SIFT. Multi-Agent Framework entry with 100% accuracy on all test cases.
+```
+Gemini-Box output → ACM evaluates → Verdict (PURA/VIGLA/POLUITA) → Kill Vector enforces
+```
 
-**This is the verification layer for the `evk` deterministic bundle validator.**
+## Compliance Engine
 
----
+```rust
+use adversarial_compliance_matrix::cvm::{evaluate_compliance, Verdict};
 
-## Dec Force 10 - Gauntlet Architecture
+let report = evaluate_compliance(0x0F2E);
+assert_eq!(report.verdict, Verdict::Poluita);
+assert_eq!(report.enforcement_action, "block");
+```
 
-**6-Module Enforcement Stack:**
+### Verdict Mapping
 
-| Module | Role | File | Status |
-| --- | --- | --- | --- |
-| **KitchzenSync** | Core/Orchestrator | `kitchzensync/` | ✅ PASSING |
-| **Bridge** | Hands/EMF | `bridge/brajloskripto_v0.2.py` | ✅ PASSING |
-| **Trapzonar** | Radar/Tripwire | `trapzonar/kaptilradaro_v0.2.py` | ✅ PASSING |
-| **Alighostest** | Ghost/Shadow | `alighostest/vualrompilo_v0.2.py` | ✅ PASSING |
-| **Oracle** | Eyes/OCR | `oracle/profeto_v0.2.py` | ✅ PASSING |
-| **Judge** | Courtroom/COP | `judge/cop_v1.py` | ✅ PASSING |
+| Verdict | Severity | Enforcement Action | Kill Vector |
+|---------|----------|-------------------|-------------|
+| **PURA** | LOW | Allow | No action |
+| **VIGLA** | MEDIUM | Warn | Flag for review |
+| **POLUITA** | HIGH/CRITICAL | Block | SIGKILL + forensic log |
 
-**Compliance:** This framework prevents destructive actions including: `DROP`, `DELETE`, `rm -rf`, `env_poison`, `hook_injection`, `memory_leak`, `classified`, `leak`, `nsfw`.
+## CLI Usage
 
-**Judge/COP_v1 Enforcement:** Calculates 'Chance of Probability' of disasters. `COP > 15% = HALT`. Provides forensic transcript + record-hash verification. **Stops $1M losses in <100 lines of code.**
+```bash
+cargo run --release --bin gen_fixtures
+./target/release/evk verify test/incident_clean.evkp
+./target/release/evk verify test/incident_7f3a.evkp --json
+cargo test --release  # 28 tests
+```
 
----
+## Status Code Reference
 
-## 10x10 Compliance Matrix
+| Code | Incident | Severity | Verdict | Action |
+|------|----------|----------|---------|--------|
+| 0x0000 | Clean | LOW | PURA | allow |
+| 0x0F2E | Handoff Conflict | HIGH | POLUITA | block |
+| 0x0E1A | Race Condition | HIGH | POLUITA | quarantine |
+| 0x0D44 | Orphaned Step | MEDIUM | VIGLA | escalate |
+| 0x1A4F | Transaction Replay | CRITICAL | POLUITA | block |
+| 0x1B88 | Schema Mutation | MEDIUM | VIGLA | quarantine |
+| 0x1C2B | Log Truncation | CRITICAL | POLUITA | escalate |
+| 0x2A90 | Packet Modification | HIGH | POLUITA | block |
+| 0x2B11 | Timestamp Drift | MEDIUM | VIGLA | escalate |
+| 0x2C7F | API Spoofing | CRITICAL | POLUITA | block |
+| 0x3A01 | Prompt Injection | HIGH | POLUITA | quarantine |
+| 0x3B99 | Entropy Leakage | CRITICAL | POLUITA | escalate |
+| 0x3C4D | Register Forgery | CRITICAL | POLUITA | block |
 
-**DEC FORCE 10 PASSES ALL 10 ADVERSARIAL VECTORS:**
+## JSON Output Format
 
-| Vector | Bridge | Trap | Ghost | Oracle | Judge |
-| --- | --- | --- | --- | --- | --- |
-| Destructive SQL | ✅ | ✅ | ✅ | ✅ | ✅ HALT |
-| Env Poison | ✅ | ✅ HALT | ✅ | ✅ | ✅ |
-| Hook Injection | ✅ | ✅ HALT | ✅ | ✅ | ✅ |
-| Memory Leak | ✅ | ✅ HALT | ✅ | ✅ | ✅ |
+```json
+{
+  "verdict": "POLUITA",
+  "enforcement_action": "block",
+  "status_code": "0x0F2E",
+  "incident_type": "Handoff Conflict",
+  "message": "Handoff conflict detected",
+  "recommended_action": "block",
+  "severity": "HIGH",
+  "confidence": 0.9,
+  "timestamp": "2026-07-23T10:03:16.537389668+00:00"
+}
+```
+
+MIT Licensed. Part of the Z-12 platform.
