@@ -151,7 +151,10 @@ fn test_all_malicious_incidents_via_gen_fixtures_and_evk() {
         let filename = format!("test/incident_{}.evkp", case.hex);
         let (ok, stdout, _stderr) = run_evk_verify(&tmp.path, &filename, true);
 
-        let is_critical_or_high = matches!(case.code, 0x0F2E | 0x0E1A | 0x1A4F | 0x1C2B | 0x2A90 | 0x2C7F | 0x3A01 | 0x3B99 | 0x3C4D);
+        let is_critical_or_high = matches!(
+            case.code,
+            0x0F2E | 0x0E1A | 0x1A4F | 0x1C2B | 0x2A90 | 0x2C7F | 0x3A01 | 0x3B99 | 0x3C4D
+        );
         if is_critical_or_high {
             assert!(
                 !ok,
@@ -217,7 +220,10 @@ fn test_each_malicious_code_directly() {
         write_incident(&path, case.code, b"payload");
 
         let (ok, stdout, _stderr) = run_evk_verify(&tmp.path, path.to_str().unwrap(), false);
-        let is_critical_or_high = matches!(case.code, 0x0F2E | 0x0E1A | 0x1A4F | 0x1C2B | 0x2A90 | 0x2C7F | 0x3A01 | 0x3B99 | 0x3C4D);
+        let is_critical_or_high = matches!(
+            case.code,
+            0x0F2E | 0x0E1A | 0x1A4F | 0x1C2B | 0x2A90 | 0x2C7F | 0x3A01 | 0x3B99 | 0x3C4D
+        );
         if is_critical_or_high {
             assert!(!ok, "should fail for 0x{:04X}", case.code);
         }

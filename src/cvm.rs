@@ -41,30 +41,6 @@ impl Verdict {
     }
 }
 
-/// Verification result structure
-#[derive(Debug, Clone)]
-pub struct VerificationResult {
-    pub status_code: u16,
-    pub is_valid: bool,
-    pub message: String,
-}
-
-impl VerificationResult {
-    pub fn new(status_code: u16, is_valid: bool, message: impl Into<String>) -> Self {
-        VerificationResult {
-            status_code,
-            is_valid,
-            message: message.into(),
-        }
-    }
-
-    pub fn format_output(&self) -> String {
-        let status_str = format!("0x{:04X}", self.status_code);
-        let validity = if self.is_valid { "VALID" } else { "INVALID" };
-        format!("{}: {} [{}]", validity, self.message, status_str)
-    }
-}
-
 /// Compliance report — the full output of the compliance engine
 #[derive(Debug, Clone)]
 pub struct ComplianceReport {
@@ -80,6 +56,7 @@ pub struct ComplianceReport {
 }
 
 impl ComplianceReport {
+    #[allow(dead_code)]
     pub fn to_json(&self) -> String {
         serde_json::json!({
             "verdict": self.verdict.as_str(),
@@ -135,19 +112,79 @@ pub fn evaluate_compliance(status_code: u16) -> ComplianceReport {
     }
 
     let (incident_type, message, severity, recommended_action) = match status_code {
-        STATUS_HANDOFF_CONFLICT => ("Handoff Conflict", "Handoff conflict detected", "HIGH", "block"),
-        STATUS_RACE_CONDITION => ("Race Condition", "Race condition detected", "HIGH", "quarantine"),
-        STATUS_ORPHANED_STEP => ("Orphaned Step", "Orphaned step detected", "MEDIUM", "escalate"),
-        STATUS_TRANSACTION_REPLAY => ("Transaction Replay", "Transaction replay detected", "CRITICAL", "block"),
-        STATUS_SCHEMA_MUTATION => ("Schema Mutation", "Schema mutation detected", "MEDIUM", "quarantine"),
-        STATUS_LOG_TRUNCATION => ("Log Truncation", "Log truncation detected", "CRITICAL", "escalate"),
-        STATUS_PACKET_MODIFICATION => ("Packet Modification", "Packet modification detected", "HIGH", "block"),
-        STATUS_TIMESTAMP_DRIFT => ("Timestamp Drift", "Timestamp drift detected", "MEDIUM", "escalate"),
+        STATUS_HANDOFF_CONFLICT => (
+            "Handoff Conflict",
+            "Handoff conflict detected",
+            "HIGH",
+            "block",
+        ),
+        STATUS_RACE_CONDITION => (
+            "Race Condition",
+            "Race condition detected",
+            "HIGH",
+            "quarantine",
+        ),
+        STATUS_ORPHANED_STEP => (
+            "Orphaned Step",
+            "Orphaned step detected",
+            "MEDIUM",
+            "escalate",
+        ),
+        STATUS_TRANSACTION_REPLAY => (
+            "Transaction Replay",
+            "Transaction replay detected",
+            "CRITICAL",
+            "block",
+        ),
+        STATUS_SCHEMA_MUTATION => (
+            "Schema Mutation",
+            "Schema mutation detected",
+            "MEDIUM",
+            "quarantine",
+        ),
+        STATUS_LOG_TRUNCATION => (
+            "Log Truncation",
+            "Log truncation detected",
+            "CRITICAL",
+            "escalate",
+        ),
+        STATUS_PACKET_MODIFICATION => (
+            "Packet Modification",
+            "Packet modification detected",
+            "HIGH",
+            "block",
+        ),
+        STATUS_TIMESTAMP_DRIFT => (
+            "Timestamp Drift",
+            "Timestamp drift detected",
+            "MEDIUM",
+            "escalate",
+        ),
         STATUS_API_SPOOFING => ("API Spoofing", "API spoofing detected", "CRITICAL", "block"),
-        STATUS_PROMPT_INJECTION => ("Prompt Injection", "Prompt injection detected", "HIGH", "quarantine"),
-        STATUS_ENTROPY_LEAKAGE => ("Entropy Leakage", "Entropy leakage detected", "CRITICAL", "escalate"),
-        STATUS_REGISTER_FORGERY => ("Register Forgery", "Register forgery detected", "CRITICAL", "block"),
-        _ => ("Unknown Incident", "Unknown malicious status detected", "MEDIUM", "escalate"),
+        STATUS_PROMPT_INJECTION => (
+            "Prompt Injection",
+            "Prompt injection detected",
+            "HIGH",
+            "quarantine",
+        ),
+        STATUS_ENTROPY_LEAKAGE => (
+            "Entropy Leakage",
+            "Entropy leakage detected",
+            "CRITICAL",
+            "escalate",
+        ),
+        STATUS_REGISTER_FORGERY => (
+            "Register Forgery",
+            "Register forgery detected",
+            "CRITICAL",
+            "block",
+        ),
+        _ => (
+            "Unknown Incident",
+            "Unknown malicious status detected",
+            "MEDIUM",
+            "escalate",
+        ),
     };
 
     let verdict = match severity {
@@ -173,8 +210,7 @@ pub fn evaluate_compliance(status_code: u16) -> ComplianceReport {
 
 /// Verify a file and produce a compliance report.
 pub fn verify_file(path: &str) -> Result<ComplianceReport, String> {
-    let file_data =
-        std::fs::read(path).map_err(|e| format!("Failed to read file: {}", e))?;
+    let file_data = std::fs::read(path).map_err(|e| format!("Failed to read file: {}", e))?;
 
     if file_data.len() < 2 {
         let mut report = evaluate_compliance(0x0000);
@@ -197,10 +233,18 @@ mod tests {
     #[test]
     fn test_status_codes_are_unique() {
         let codes = vec![
-            STATUS_HANDOFF_CONFLICT, STATUS_RACE_CONDITION, STATUS_ORPHANED_STEP,
-            STATUS_TRANSACTION_REPLAY, STATUS_SCHEMA_MUTATION, STATUS_LOG_TRUNCATION,
-            STATUS_PACKET_MODIFICATION, STATUS_TIMESTAMP_DRIFT, STATUS_API_SPOOFING,
-            STATUS_PROMPT_INJECTION, STATUS_ENTROPY_LEAKAGE, STATUS_REGISTER_FORGERY,
+            STATUS_HANDOFF_CONFLICT,
+            STATUS_RACE_CONDITION,
+            STATUS_ORPHANED_STEP,
+            STATUS_TRANSACTION_REPLAY,
+            STATUS_SCHEMA_MUTATION,
+            STATUS_LOG_TRUNCATION,
+            STATUS_PACKET_MODIFICATION,
+            STATUS_TIMESTAMP_DRIFT,
+            STATUS_API_SPOOFING,
+            STATUS_PROMPT_INJECTION,
+            STATUS_ENTROPY_LEAKAGE,
+            STATUS_REGISTER_FORGERY,
         ];
         let mut sorted = codes.clone();
         sorted.sort();
